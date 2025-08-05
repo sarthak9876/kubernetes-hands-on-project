@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-```markdown
-=======
 
->>>>>>> b8fb812 (Added README file)
 # Kubernetes Hands-On Learning Project 🚀
 
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.28.0-blue.svg)](https://kubernetes.io/)
@@ -27,188 +23,26 @@ This repository documents my complete journey of building and managing a Kuberne
 
 ## 🏗️ Architecture Overview
 
-<<<<<<< HEAD
-### Infrastructure Architecture
-```
+
+
+```plaintext
 ┌─────────────────────────────────────────────────────────────┐
 │                        AWS Cloud                            │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
 │  │  Control Plane  │  │   Worker Node 1 │  │ Worker Node 2│ │
 │  │   (t3.small)    │  │   (t3.micro)    │  │  (t3.micro)  │ │
-│  │                 │  │                 │  │              │ │
-│  │ -  API Server    │  │ -  kubelet       │  │ -  kubelet    │ │
-│  │ -  etcd          │  │ -  kube-proxy    │  │ -  kube-proxy │ │
-│  │ -  Controller    │  │ -  Flannel CNI   │  │ -  Flannel CNI│ │
-│  │ -  Scheduler     │  │ -  App Pods      │  │ -  App Pods   │ │
+│  │ - API Server    │  │ - kubelet       │  │ - kubelet    │ │
+│  │ - etcd          │  │ - kube-proxy    │  │ - kube-proxy │ │
+│  │ - Controller    │  │ - Flannel CNI   │  │ - Flannel CNI│ │
+│  │ - Scheduler     │  │ - App Pods      │  │ - App Pods   │ │
 │  └─────────────────┘  └─────────────────┘  └──────────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Application Architecture
-```
-┌──────────────────────────────────────────────────────────────┐
-│                     3-Tier Application                       │
-│                                                              │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐   │
-│  │  Frontend   │    │   Backend   │    │    Database     │   │
-│  │   (Nginx)   │◄──►│   (Flask)   │◄──►│    (MySQL)      │   │
-│  │             │    │             │    │                 │   │
-│  │ -  Static UI │    │ -  REST API  │    │ -  StatefulSet   │   │
-│  │ -  Reverse   │    │ -  5 Replicas│    │ -  Persistent    │   │
-│  │   Proxy     │    │ -  ConfigMap │    │   Storage       │   │
-│  │ -  NodePort  │    │ -  Secrets   │    │ -  Health Checks │   │
-│  └─────────────┘    └─────────────┘    └─────────────────┘   │
-└──────────────────────────────────────────────────────────────┘
-```
-
-## 📁 Repository Structure
-
-```
-kubernetes-hands-on-project/
-├── README.md                              # This comprehensive guide
-├── LICENSE                                # MIT License
-├── .gitignore                            # Git ignore patterns
-│
-├── 📁 docs/                              # Complete Documentation
-│   ├── 01-prerequisites/
-│   │   ├── README.md                     # Prerequisites overview
-│   │   ├── aws-setup.md                  # AWS EC2 setup guide
-│   │   └── ubuntu-preparation.md         # Ubuntu system preparation
-│   │
-│   ├── 02-cluster-setup/
-│   │   ├── README.md                     # Cluster setup overview
-│   │   ├── control-plane-setup.md        # Master node configuration
-│   │   ├── worker-nodes-setup.md         # Worker nodes joining
-│   │   ├── networking-setup.md           # Flannel CNI installation
-│   │   ├── metrics-server.md             # Monitoring setup
-│   │   └── troubleshooting.md            # Common setup issues
-│   │
-│   ├── 03-application-deployment/
-│   │   ├── README.md                     # Application overview
-│   │   ├── database-tier.md              # MySQL StatefulSet
-│   │   ├── backend-tier.md               # Flask API deployment
-│   │   ├── frontend-tier.md              # Nginx frontend
-│   │   ├── service-discovery.md          # Inter-service communication
-│   │   └── testing-validation.md         # Testing procedures
-│   │
-│   ├── 04-cluster-upgrade/
-│   │   ├── README.md                     # Upgrade strategy
-│   │   ├── upgrade-planning.md           # Pre-upgrade checklist
-│   │   ├── upgrade-procedure.md          # Step-by-step upgrade
-│   │   └── rollback-strategy.md          # Disaster recovery
-│   │
-│   └── 05-best-practices/
-│       ├── security.md                   # Security hardening
-│       ├── monitoring.md                 # Observability setup
-│       ├── backup-recovery.md            # Data protection
-│       └── production-readiness.md       # Production checklist
-│
-├── 📁 scripts/                           # Automation Scripts
-│   ├── 00-prerequisites/
-│   │   ├── aws-instance-setup.sh         # EC2 instance preparation
-│   │   ├── ubuntu-system-prep.sh         # System updates & tools
-│   │   └── validate-prerequisites.sh     # Pre-flight checks
-│   │
-│   ├── 01-cluster-setup/
-│   │   ├── install-docker.sh             # Docker installation
-│   │   ├── install-kubernetes.sh         # K8s components
-│   │   ├── init-control-plane.sh         # Master node setup
-│   │   ├── join-worker-nodes.sh          # Worker node joining
-│   │   ├── setup-flannel-cni.sh          # Network plugin
-│   │   ├── setup-metrics-server.sh       # Monitoring components
-│   │   └── validate-cluster.sh           # Cluster health check
-│   │
-│   ├── 02-application-deploy/
-│   │   ├── deploy-database.sh            # MySQL deployment
-│   │   ├── deploy-backend.sh             # Flask API deployment
-│   │   ├── deploy-frontend.sh            # Nginx deployment
-│   │   ├── create-secrets-configs.sh     # ConfigMaps & Secrets
-│   │   └── validate-application.sh       # End-to-end testing
-│   │
-│   └── 03-utilities/
-│       ├── cluster-status.sh             # Health monitoring
-│       ├── backup-cluster.sh             # Backup procedures
-│       ├── cleanup-cluster.sh            # Resource cleanup
-│       └── reset-cluster.sh              # Complete reset
-│
-├── 📁 k8s-manifests/                     # Kubernetes YAML Files
-│   ├── 00-namespace/
-│   │   └── application-namespace.yaml    # Application namespace
-│   │
-│   ├── 01-database/
-│   │   ├── mysql-secret.yaml             # Database credentials
-│   │   ├── mysql-configmap.yaml          # Database configuration
-│   │   ├── mysql-pvc.yaml                # Persistent volume claim
-│   │   ├── mysql-statefulset.yaml        # MySQL StatefulSet
-│   │   └── mysql-service.yaml            # Database service
-│   │
-│   ├── 02-backend/
-│   │   ├── flask-configmap.yaml          # Backend configuration
-│   │   ├── flask-secret.yaml             # API secrets
-│   │   ├── flask-deployment.yaml         # Flask deployment
-│   │   └── flask-service.yaml            # Backend service
-│   │
-│   ├── 03-frontend/
-│   │   ├── nginx-configmap.yaml          # Nginx configuration
-│   │   ├── nginx-deployment.yaml         # Frontend deployment
-│   │   └── nginx-service.yaml            # Frontend service (NodePort)
-│   │
-│   └── 04-monitoring/
-│       ├── metrics-server.yaml           # Metrics server
-│       └── resource-quota.yaml          # Resource limitations
-│
-├── 📁 application-code/                  # Application Source Code
-│   ├── backend/
-│   │   ├── app.py                        # Flask application
-│   │   ├── requirements.txt              # Python dependencies
-│   │   ├── config.py                     # Application config
-│   │   ├── Dockerfile                    # Backend container
-│   │   └── health.py                     # Health check endpoint
-│   │
-│   └── frontend/
-│       ├── index.html                    # Main web page
-│       ├── style.css                     # Styling
-│       ├── script.js                     # Frontend logic
-│       ├── nginx.conf                    # Nginx configuration
-│       └── Dockerfile                    # Frontend container
-│
-├── 📁 infrastructure/                    # Infrastructure Configuration
-│   ├── kubeadm-config.yaml              # Cluster initialization
-│   ├── flannel-config.yaml              # CNI configuration
-│   ├── storage-class.yaml               # Local storage class
-│   └── network-policy.yaml              # Network security
-│
-└── 📁 troubleshooting/                   # Issue Resolution
-    ├── common-issues.md                  # FAQ and solutions
-    ├── cluster-debugging.md              # Cluster troubleshooting
-    ├── application-debugging.md          # App troubleshooting
-    └── performance-tuning.md             # Optimization guide
-```
-
-=======
-
-
-### Infrastructure Architecture
-
-```plaintext
-┌─────────────────────────────────────────────────────────────┐
-│                        AWS Cloud                           │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐│
-│  │ Control Plane   │  │ Worker Node 1   │  │ Worker Node 2││
-│  │  (t3.small)     │  │  (t3.micro)     │  │  (t3.micro)  ││
-│  │ - API Server    │  │ - kubelet       │  │ - kubelet    ││
-│  │ - etcd          │  │ - kube-proxy    │  │ - kube-proxy ││
-│  │ - Controller    │  │ - Flannel CNI   │  │ - Flannel CNI││
-│  │ - Scheduler     │  │ - App Pods      │  │ - App Pods   ││
-│  └─────────────────┘  └─────────────────┘  └──────────────┘│
-└─────────────────────────────────────────────────────────────┘
-```
-
-> **Tip:** For best clarity, view the PNG diagram below.
-
 ![Cluster Architecture](images/architecture/cluster-overview.png)
 
 ### Application Architecture
+
 
 ```plaintext
 ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐
@@ -221,11 +55,10 @@ kubernetes-hands-on-project/
 └─────────────┘    └─────────────┘    └─────────────────┘
 ```
 
-> **Tip:** For best clarity, view the PNG diagram below.
-
 ![Application Flow](images/architecture/application-flow.png)
 
 ### Network Topology
+
 
 ```plaintext
 ┌───────────────┐      ┌───────────────┐      ┌───────────────┐      ┌───────────────┐
@@ -233,8 +66,6 @@ kubernetes-hands-on-project/
 │ (Browser)     │      │ (NodePort)    │      │ (ClusterIP)   │      │ (StatefulSet) │
 └───────────────┘      └───────────────┘      └───────────────┘      └───────────────┘
 ```
-
-> **Tip:** For best clarity, view the PNG diagram below.
 
 ![Network Diagram](images/architecture/network-diagram.png)
 
@@ -369,7 +200,6 @@ kubernetes-hands-on-project/
 ```
 
 
->>>>>>> b8fb812 (Added README file)
 ## 🚀 Quick Start Guide
 
 ### Prerequisites Checklist
@@ -636,9 +466,5 @@ If this project helped you learn Kubernetes, please consider giving it a star! �
 ---
 
 *This project represents real-world Kubernetes skills applicable to production environments. Perfect for DevOps engineers, Platform engineers, and anyone serious about container orchestration.*
-<<<<<<< HEAD
-```
-=======
 
->>>>>>> b8fb812 (Added README file)
 
