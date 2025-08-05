@@ -1,4 +1,3 @@
-
 # Kubernetes Hands-On Learning Project 🚀
 
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.28.0-blue.svg)](https://kubernetes.io/)
@@ -385,7 +384,7 @@ kubectl delete pod  --force --grace-period=0
 
 # Check cluster status
 ./scripts/03-utilities/cluster-status.sh
-```
+
 
 ## 🎓 Next Steps & Extensions
 
@@ -438,10 +437,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact & Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/sarthak9876/kubernetes-hands-on-project/issues)
-- **GitHub Discussions**: [Community discussions](https://github.com/sarthak9876/kubernetes-hands-on-project/discussions)
-- **LinkedIn**: [Connect with me](https://www.linkedin.com/in/sarthakvaish007)
-- **Email**: [sarthakvaish31@gmail.com](mailto:sarthakvaish31@gmail.com)
+- [**GitHub Issues**: Report bugs or request features](https://github.com/sarthak9876/kubernetes-hands-on-project/issues)
+- [**GitHub Discussions**: Community discussions](https://github.com/sarthak9876/kubernetes-hands-on-project/discussions)
+- [**LinkedIn**: Connect with me](https://www.linkedin.com/in/sarthakvaish007)
+- [**Email**: sarthakvaish31@gmail.com](mailto:sarthakvaish31@gmail.com)
 
 ## 🌟 Star History
 
@@ -449,7 +448,7 @@ If this project helped you learn Kubernetes, please consider giving it a star! �
 
 ## 📈 Project Stats
 
-- **Lines of Code**: 2000+ (YAML, Shell, Python)
+- **Lines of Code** : 2000+ (YAML, Shell, Python)
 - **Documentation Pages**: 20+
 - **Scripts Created**: 15+
 - **Issues Resolved**: 10+ (documented)
