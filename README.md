@@ -342,7 +342,7 @@ kubectl get svc nginx-service -o wide
 |-----------|------------|---------|---------|
 | **Orchestration** | Kubernetes | v1.28.0 | Container orchestration |
 | **Container Runtime** | Docker | 20.10+ | Container execution |
-| **Cloud Provider** | AWS EC2 | - | Infrastructure hosting |
+| **Cloud Provider** | AWS EC2 | Ubuntu | Infrastructure hosting |
 | **Operating System** | Ubuntu | 20.04 LTS | Base system |
 | **Networking** | Flannel CNI | Latest | Pod networking |
 | **Database** | MySQL | 8.0 | Data persistence |
@@ -357,30 +357,46 @@ kubectl get svc nginx-service -o wide
 - **Cluster Setup Time**: ~30 minutes (with automation)
 - **Application Deployment**: ~10 minutes
 - **Pod Startup Time**: 
-kubectl logs  --previous
-
+```
+kubectl logs <pod_name> -n <namespace> --previous
+```
 # Service debugging
+```
 kubectl get svc
 kubectl get endpoints
+```
 
 # Network debugging
-kubectl exec -it  -- nslookup 
+```
+kubectl exec <pod_name> -n <namespace> -it  -- nslookup 
+```
 
 # Resource debugging
+```
 kubectl describe node 
-kubectl get events
+kubectl get events --sort-by=.metadata.creationTimestamp
 ```
 
-### Emergency Procedures
+# Emergency Procedures
+
+## Restart deployment
 ```
-# Restart deployment
-kubectl rollout restart deployment/
-
-# Scale deployment
-kubectl scale deployment  --replicas=3
-
-# Force delete stuck pod
-kubectl delete pod  --force --grace-period=0
+kubectl rollout restart deployment <deployment_name> -n <namespace>
+```
+## Scale deployment
+```
+kubectl scale deployment <deployment_name> -n <namespace> --replicas=<replica_count> //can be used to scale up or scale down your application
+```
+## Force delete stuck pod
+```
+kubectl delete pod <pod_name> --force --grace-period=0
+```
+## Resource usage
+```
+kubectl top nodes - Shows node resource usage
+kubectl top pods - Shows pod resource usage
+kubectl top pods --containers - Shows container-level usage
+```
 
 # Check cluster status
 ./scripts/03-utilities/cluster-status.sh
