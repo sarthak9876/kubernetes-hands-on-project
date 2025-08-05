@@ -38,7 +38,7 @@ This repository documents my complete journey of building and managing a Kuberne
 └─────────────────────────────────────────────────────────────┘
 ```
 
-![Cluster Architecture](images/architecture/cluster-overview.png)
+
 
 ### Application Architecture
 
@@ -54,7 +54,7 @@ This repository documents my complete journey of building and managing a Kuberne
 └─────────────┘    └─────────────┘    └─────────────────┘
 ```
 
-![Application Flow](images/architecture/application-flow.png)
+
 
 ### Network Topology
 
@@ -66,7 +66,7 @@ This repository documents my complete journey of building and managing a Kuberne
 └───────────────┘      └───────────────┘      └───────────────┘      └───────────────┘
 ```
 
-![Network Diagram](images/architecture/network-diagram.png)
+
 
 
 ## 📁 Repository Structure
@@ -393,9 +393,9 @@ kubectl delete pod <pod_name> --force --grace-period=0
 ```
 ## Resource usage
 ```
-kubectl top nodes - Shows node resource usage
-kubectl top pods - Shows pod resource usage
-kubectl top pods --containers - Shows container-level usage
+kubectl top nodes                //Shows node resource usage
+kubectl top pods                 //Shows pod resource usage
+kubectl top pods --containers    //Shows container-level usage
 ```
 
 # Check cluster status
