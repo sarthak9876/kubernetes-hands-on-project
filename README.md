@@ -389,6 +389,7 @@ kubectl delete pod  --force --grace-period=0
 ## 🎓 Next Steps & Extensions
 
 ### Planned Enhancements
+- [ ] **Cluster Upgrade**: Upgrading K8s cluster from v1.28.0 to a newer version while 3-tier application is running, demonstrating zero-downtime upgrade strategies used in production environments.
 - [ ] **Helm Charts**: Package applications for easier deployment
 - [ ] **CI/CD Pipeline**: Automated testing and deployment
 - [ ] **Service Mesh**: Istio integration for advanced networking
