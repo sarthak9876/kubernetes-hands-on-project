@@ -5,7 +5,7 @@
 [![AWS](https://img.shields.io/badge/AWS-EC2-orange.svg)](https://aws.amazon.com/)
 [![Ubuntu](https://img.shields.io/badge/Ubuntu-20.04-orange.svg)](https://ubuntu.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/yourusername/kubernetes-hands-on-project/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/sarthak9876/kubernetes-hands-on-project/pulls)
 
 > A comprehensive, production-ready Kubernetes learning project featuring a 3-tier web application deployed on a self-managed cluster built from scratch on AWS Ubuntu instances.
 
@@ -219,7 +219,7 @@ Before starting, ensure you have:
 #### Step 1: Prepare AWS Environment
 ```
 # Clone this repository
-git clone https://github.com/yourusername/kubernetes-hands-on-project.git
+git clone https://github.com/sarthak9876/kubernetes-hands-on-project.git
 cd kubernetes-hands-on-project
 
 # Run AWS instance setup (run on all 3 instances)
@@ -304,7 +304,7 @@ chmod +x scripts/00-prerequisites/*.sh
 # Get the NodePort URL
 kubectl get svc nginx-service -o wide
 
-# Access via: http://:
+# Access via: http://<public_IP>:<nodeport_port>
 ```
 
 ## 🎯 Key Learning Outcomes
@@ -438,10 +438,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact & Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/kubernetes-hands-on-project/issues)
-- **GitHub Discussions**: [Community discussions](https://github.com/yourusername/kubernetes-hands-on-project/discussions)
-- **LinkedIn**: [Connect with me](https://linkedin.com/in/yourprofile)
-- **Email**: your.email@example.com
+- **GitHub Issues**: [Report bugs or request features](https://github.com/sarthak9876/kubernetes-hands-on-project/issues)
+- **GitHub Discussions**: [Community discussions](https://github.com/sarthak9876/kubernetes-hands-on-project/discussions)
+- **LinkedIn**: [Connect with me](https://www.linkedin.com/in/sarthakvaish007)
+- **Email**: sarthakvaish31@gmail.com
 
 ## 🌟 Star History
 
@@ -464,7 +464,3 @@ If this project helped you learn Kubernetes, please consider giving it a star! �
 💡 **Tip**: Follow the documentation step-by-step for the best learning experience!
 
 ---
-
-*This project represents real-world Kubernetes skills applicable to production environments. Perfect for DevOps engineers, Platform engineers, and anyone serious about container orchestration.*
-
-
