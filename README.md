@@ -187,27 +187,30 @@ kubernetes-hands-on-project/
 
 =======
 
+
 ### Infrastructure Architecture
 
-```text
+```plaintext
 ┌─────────────────────────────────────────────────────────────┐
-│                        AWS Cloud                            │
-│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐    │
-│  │ Control Plane │  │ Worker Node 1 │  │ Worker Node 2 │    │
-│  │  (t3.small)   │  │  (t3.micro)   │  │  (t3.micro)   │    │
-│  │ - API Server  │  │ - kubelet     │  │ - kubelet     │    │
-│  │ - etcd        │  │ - kube-proxy  │  │ - kube-proxy  │    │
-│  │ - Controller  │  │ - Flannel CNI │  │ - Flannel CNI │    │
-│  │ - Scheduler   │  │ - App Pods    │  │ - App Pods    │    │
-│  └───────────────┘  └───────────────┘  └───────────────┘    │
+│                        AWS Cloud                           │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐│
+│  │ Control Plane   │  │ Worker Node 1   │  │ Worker Node 2││
+│  │  (t3.small)     │  │  (t3.micro)     │  │  (t3.micro)  ││
+│  │ - API Server    │  │ - kubelet       │  │ - kubelet    ││
+│  │ - etcd          │  │ - kube-proxy    │  │ - kube-proxy ││
+│  │ - Controller    │  │ - Flannel CNI   │  │ - Flannel CNI││
+│  │ - Scheduler     │  │ - App Pods      │  │ - App Pods   ││
+│  └─────────────────┘  └─────────────────┘  └──────────────┘│
 └─────────────────────────────────────────────────────────────┘
 ```
+
+> **Tip:** For best clarity, view the PNG diagram below.
 
 ![Cluster Architecture](images/architecture/cluster-overview.png)
 
 ### Application Architecture
 
-```text
+```plaintext
 ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐
 │  Frontend   │    │   Backend   │    │    Database     │
 │   (Nginx)   │◄──►│   (Flask)   │◄──►│    (MySQL)      │
@@ -218,16 +221,20 @@ kubernetes-hands-on-project/
 └─────────────┘    └─────────────┘    └─────────────────┘
 ```
 
+> **Tip:** For best clarity, view the PNG diagram below.
+
 ![Application Flow](images/architecture/application-flow.png)
 
 ### Network Topology
 
-```text
+```plaintext
 ┌───────────────┐      ┌───────────────┐      ┌───────────────┐      ┌───────────────┐
 │  User         │ ---> │  Nginx        │ ---> │  Flask API    │ ---> │ MySQL DB      │
 │ (Browser)     │      │ (NodePort)    │      │ (ClusterIP)   │      │ (StatefulSet) │
 └───────────────┘      └───────────────┘      └───────────────┘      └───────────────┘
 ```
+
+> **Tip:** For best clarity, view the PNG diagram below.
 
 ![Network Diagram](images/architecture/network-diagram.png)
 
