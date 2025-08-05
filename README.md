@@ -441,7 +441,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **GitHub Issues**: [Report bugs or request features](https://github.com/sarthak9876/kubernetes-hands-on-project/issues)
 - **GitHub Discussions**: [Community discussions](https://github.com/sarthak9876/kubernetes-hands-on-project/discussions)
 - **LinkedIn**: [Connect with me](https://www.linkedin.com/in/sarthakvaish007)
-- **Email**: sarthakvaish31@gmail.com
+- **Email**: [sarthakvaish31@gmail.com](mailto:sarthakvaish31@gmail.com)
 
 ## 🌟 Star History
 
