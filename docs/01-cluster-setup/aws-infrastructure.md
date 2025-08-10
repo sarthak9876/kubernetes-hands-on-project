@@ -62,7 +62,35 @@ Recommended: Launch all cluster nodes in this VPC and subnet for isolation and s
   ```sh
   sudo apt update && sudo apt upgrade -y
   ```
+### 8. Set Hostnames
+- Update hostname for each node (control-plane,worker-1,worker-2)
+  ```sh
+  sudo hostnamectl set-hostname k8s-control-plane //On control plane
+  sudo hostnamectl set-hostname k8s-worker-1 //On worker 1
+  sudo hostnamectl set-hostname k8s-worker-2 //On worker 2
 
+  ```
+### 9 Update /etc/hosts file
+- We need to add entries for all nodes so they can communicate using hostnames:
+  ```sh
+  sudo nano /etc/hosts
+  ```
+- Add these lines (replace with your actual private IPs):
+  ```sh
+  <control-plane-private-ip>    k8s-control-plane
+  <worker1-private-ip>         k8s-worker-1
+  <worker2-private-ip>         k8s-worker-2
+  ```
+- Example:
+  ```sh
+  172.31.32.10    k8s-control-plane
+  172.31.32.11    k8s-worker-1
+  172.31.32.12    k8s-worker-2
+  ```
+## Why update /etc/hosts?
+```sh
+This allows nodes to communicate using friendly hostnames instead of IP addresses. Kubernetes components use these names for internal communication, and it makes logs and troubleshooting much more readable.
+```
 ---
 
 ## Reference
