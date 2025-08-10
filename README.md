@@ -517,7 +517,7 @@ If this project helped you learn Kubernetes, please consider giving it a star! �
 
 **Ready to start your Kubernetes journey?** 
 
-👉 Begin with [Prerequisites Setup](docs/01-prerequisites/README.md)
+👉 Begin with [Prerequisites Setup](docs/01-cluster-setup/README.md)
 
 💡 **Tip**: Follow the documentation step-by-step for the best learning experience!
 
