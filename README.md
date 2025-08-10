@@ -203,107 +203,124 @@ kubernetes-hands-on-project/
 
 ### Prerequisites Checklist
 
-Before starting, ensure you have:
+Before you begin, make sure you have the following. Each item is critical for a successful, secure, and repeatable Kubernetes deployment:
 
-- **AWS Account** with EC2 access
+- **AWS Account** with EC2 access (for provisioning cloud infrastructure)
 - **3 Ubuntu 20.04 EC2 instances**:
-  - 1× Control Plane: `t3.small` (2 vCPU, 2GB RAM)
-  - 2× Worker Nodes: `t3.micro` (1 vCPU, 1GB RAM)
-- **SSH access** to all instances
-- **Security groups** configured for K8s ports
-- **Basic Linux knowledge**
+  - 1× Control Plane: `t3.small` (2 vCPU, 2GB RAM) — runs the Kubernetes master components
+  - 2× Worker Nodes: `t3.micro` (1 vCPU, 1GB RAM) — run your application workloads
+- **SSH access** to all instances (for remote management and automation)
+- **Security groups** configured for Kubernetes ports (to allow required traffic between nodes)
+- **Basic Linux knowledge** (for troubleshooting and command-line operations)
 
 ### 🔧 Phase 1: Infrastructure Setup
 
 #### Step 1: Prepare AWS Environment
-```
-# Clone this repository
+```sh
+# Clone this repository to get all manifests, scripts, and documentation
 git clone https://github.com/sarthak9876/kubernetes-hands-on-project.git
 cd kubernetes-hands-on-project
 
-# Run AWS instance setup (run on all 3 instances)
+# (Optional) Make all prerequisite scripts executable
 chmod +x scripts/00-prerequisites/*.sh
+
+# Run the AWS instance setup script on all 3 EC2 instances
+# This script will install base packages, set up users, and configure the system for Kubernetes
 ./scripts/00-prerequisites/aws-instance-setup.sh
 ```
 
 #### Step 2: System Preparation
-```
-# Prepare Ubuntu system (run on all 3 instances)
+```sh
+# Prepare each Ubuntu system for Kubernetes (run on all 3 instances)
+# This script will update the OS, configure networking, and install essential tools
 ./scripts/00-prerequisites/ubuntu-system-prep.sh
 
-# Validate prerequisites
+# Validate that all prerequisites are met (run on all 3 instances)
+# This checks for required kernel modules, swap status, and system settings
 ./scripts/00-prerequisites/validate-prerequisites.sh
 ```
 
 ### ⚙️ Phase 2: Kubernetes Cluster Setup
 
-#### Step 3: Install Docker & Kubernetes
-```
-# Install Docker (run on all 3 instances)
-./scripts/01-cluster-setup/install-docker.sh
+#### Step 3: Install Container Runtime & Kubernetes
+
+> **Note:** This project supports both containerd (recommended) and Docker as container runtimes. Choose the runtime that best fits your needs. See the documentation for details.
+
+```sh
+# Install your chosen container runtime (run on all 3 instances)
+# For containerd (recommended):
+./scripts/01-cluster-setup/install-containerd.sh
+# For Docker (legacy/optional):
+# ./scripts/01-cluster-setup/install-docker.sh
 
 # Install Kubernetes components (run on all 3 instances)
 ./scripts/01-cluster-setup/install-kubernetes.sh
 ```
 
 #### Step 4: Initialize Control Plane
-```
-# Run ONLY on control plane node
+```sh
+# Run ONLY on the control plane node
+# This script initializes the Kubernetes control plane and outputs a join command for worker nodes
 ./scripts/01-cluster-setup/init-control-plane.sh
 
-# Save the join command that appears - you'll need it for workers!
+# Save the join command that appears — you'll need it for workers!
 ```
 
 #### Step 5: Setup Worker Nodes
-```
+```sh
 # Run on each worker node
+# This script joins the node to the cluster using the join command from the control plane
 ./scripts/01-cluster-setup/join-worker-nodes.sh
 
 # Note: Edit the script with the actual join command from step 4
 ```
 
 #### Step 6: Configure Networking
-```
-# Run ONLY on control plane node
+```sh
+# Run ONLY on the control plane node
+# This script deploys the Flannel CNI for pod networking
 ./scripts/01-cluster-setup/setup-flannel-cni.sh
 
-# Setup metrics server
+# Deploy the metrics server for resource monitoring
 ./scripts/01-cluster-setup/setup-metrics-server.sh
 
-# Validate cluster
+# Validate the cluster status and health
 ./scripts/01-cluster-setup/validate-cluster.sh
 ```
 
 ### 🏗️ Phase 3: Application Deployment
 
 #### Step 7: Deploy Database Tier
-```
-# Create namespace and deploy MySQL
+```sh
+# Create Kubernetes secrets and configmaps for the database
 ./scripts/02-application-deploy/create-secrets-configs.sh
+
+# Deploy the MySQL database StatefulSet and service
 ./scripts/02-application-deploy/deploy-database.sh
 ```
 
 #### Step 8: Deploy Backend Tier
-```
-# Deploy Flask API
+```sh
+# Deploy the Flask API backend (Deployment, Service, ConfigMap, Secret)
 ./scripts/02-application-deploy/deploy-backend.sh
 ```
 
 #### Step 9: Deploy Frontend Tier
-```
-# Deploy Nginx frontend
+```sh
+# Deploy the Nginx frontend (Deployment, Service, ConfigMap)
 ./scripts/02-application-deploy/deploy-frontend.sh
 
-# Validate complete application
+# Validate the complete application stack (frontend, backend, database)
 ./scripts/02-application-deploy/validate-application.sh
 ```
 
 #### Step 10: Access Your Application
-```
-# Get the NodePort URL
+```sh
+# Get the NodePort URL for the Nginx service
 kubectl get svc nginx-service -o wide
 
-# Access via: http://<public_IP>:<nodeport_port>
+# Access your application in a browser using:
+# http://<public_IP>:<nodeport_port>
 ```
 
 ## 🎯 Key Learning Outcomes
@@ -354,52 +371,77 @@ kubectl get svc nginx-service -o wide
 ## 📊 Project Highlights
 
 ### Performance Metrics
+kubectl logs <pod_name> -n <namespace> --previous
+kubectl get svc
+kubectl exec <pod_name> -n <namespace> -it  -- nslookup 
+kubectl describe node 
+kubectl get events --sort-by=.metadata.creationTimestamp
+
 - **Cluster Setup Time**: ~30 minutes (with automation)
 - **Application Deployment**: ~10 minutes
-- **Pod Startup Time**: 
-```
-kubectl logs <pod_name> -n <namespace> --previous
-```
-# Service debugging
-```
+- **Pod Startup Time**: Use the following command to check pod logs and startup times:
+  ```sh
+  kubectl logs <pod_name> -n <namespace> --previous
+  ```
+
+#### Service Debugging
+```sh
+# List all services and their endpoints
 kubectl get svc
 kubectl get endpoints
 ```
 
-# Network debugging
-```
-kubectl exec <pod_name> -n <namespace> -it  -- nslookup 
+#### Network Debugging
+```sh
+# Run DNS/network checks from within a pod
+kubectl exec <pod_name> -n <namespace> -it -- nslookup <service>
 ```
 
-# Resource debugging
-```
-kubectl describe node 
+#### Resource Debugging
+```sh
+# Describe node details and view recent events
+kubectl describe node
 kubectl get events --sort-by=.metadata.creationTimestamp
 ```
 
 # Emergency Procedures
 
-## Restart deployment
-```
+kubectl rollout restart deployment <deployment_name> -n <namespace>
+kubectl scale deployment <deployment_name> -n <namespace> --replicas=<replica_count> //can be used to scale up or scale down your application
+kubectl delete pod <pod_name> --force --grace-period=0
+kubectl top nodes                //Shows node resource usage
+
+## Restart a Deployment
+```sh
+# Safely restart a deployment (e.g., after config changes)
 kubectl rollout restart deployment <deployment_name> -n <namespace>
 ```
-## Scale deployment
-```
-kubectl scale deployment <deployment_name> -n <namespace> --replicas=<replica_count> //can be used to scale up or scale down your application
-```
-## Force delete stuck pod
-```
-kubectl delete pod <pod_name> --force --grace-period=0
-```
-## Resource usage
-```
-kubectl top nodes                //Shows node resource usage
-kubectl top pods                 //Shows pod resource usage
-kubectl top pods --containers    //Shows container-level usage
+
+## Scale a Deployment
+```sh
+# Scale up or down your application by changing the replica count
+kubectl scale deployment <deployment_name> -n <namespace> --replicas=<replica_count>
 ```
 
-# Check cluster status
+## Force Delete a Stuck Pod
+```sh
+# Forcefully remove a pod that is stuck or unresponsive
+kubectl delete pod <pod_name> --force --grace-period=0
+```
+
+## Check Resource Usage
+```sh
+# View node and pod resource usage (requires metrics server)
+kubectl top nodes
+kubectl top pods
+kubectl top pods --containers
+```
+
+## Check Cluster Status
+```sh
+# Run the cluster status utility script
 ./scripts/03-utilities/cluster-status.sh
+```
 
 
 ## 🎓 Next Steps & Extensions
