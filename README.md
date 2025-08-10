@@ -106,6 +106,7 @@ kubernetes-hands-on-project/
 │   │   ├── cluster-issues.md
 │   │   └── application-issues.md
 │   └── best-practices/
+│       ├── README.md
 │       ├── security.md
 │       ├── monitoring.md
 │       ├── backup-recovery.md
