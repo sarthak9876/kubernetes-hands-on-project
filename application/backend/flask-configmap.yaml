@@ -1,0 +1,14 @@
+# flask-configmap.yaml
+# Stores non-sensitive configuration for the Flask API
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flask-config
+  namespace: backend
+  labels:
+    app: flask-api
+data:
+  FLASK_ENV: production
+  API_FEATURE_FLAG: "true"
+  DB_HOST: mysql.database.svc.cluster.local
+  DB_PORT: "3306"

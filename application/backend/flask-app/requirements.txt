@@ -1,0 +1,3 @@
+# requirements.txt
+# Python dependencies for the Flask API
+Flask==2.3.2
