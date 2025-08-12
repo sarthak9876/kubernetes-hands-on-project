@@ -1,0 +1,16 @@
+# mysql-service.yaml
+# Exposes MySQL to other services in the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: database
+  labels:
+    app: mysql
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: mysql
+  clusterIP: None  # Headless service for StatefulSet
