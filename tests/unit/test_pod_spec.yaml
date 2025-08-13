@@ -1,0 +1,13 @@
+# test_pod_spec.yaml
+# Example: Unit test for validating a Kubernetes Pod spec using kubeval
+# Usage: Run with kubeval or similar YAML validation tool
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+spec:
+  containers:
+  - name: test-container
+    image: busybox
+    command: ['sh', '-c', 'echo Hello Kubernetes! && sleep 3600']

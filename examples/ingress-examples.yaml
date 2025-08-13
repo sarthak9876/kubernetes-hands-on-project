@@ -1,0 +1,22 @@
+# ingress-examples.yaml
+# Example: Basic Ingress manifest for exposing a service via HTTP
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: example.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: example-clusterip-service
+            port:
+              number: 80

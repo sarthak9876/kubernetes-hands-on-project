@@ -1,0 +1,33 @@
+# service-examples.yaml
+# Example: ClusterIP and NodePort Service manifests
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-clusterip-service
+  namespace: default
+spec:
+  selector:
+    app: nginx-example
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-nodeport-service
+  namespace: default
+spec:
+  selector:
+    app: nginx-example
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
+  type: NodePort
