@@ -1,0 +1,17 @@
+# nginx-service.yaml
+# Exposes the Nginx frontend to users and other services
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-frontend
+  namespace: frontend
+  labels:
+    app: nginx-frontend
+spec:
+  selector:
+    app: nginx-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort

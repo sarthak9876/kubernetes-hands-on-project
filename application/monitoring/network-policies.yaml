@@ -1,0 +1,39 @@
+# network-policies.yaml
+# Network policies for monitoring namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monitoring-network-policy
+  namespace: monitoring
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: default
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: backend
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: frontend
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: database
+    ports:
+    - protocol: TCP
+      port: 9090  # Prometheus
+    - protocol: TCP
+      port: 3000  # Grafana
+  egress:
+  - to:
+    - namespaceSelector: {}  # Allow outbound to all namespaces for metrics collection
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443

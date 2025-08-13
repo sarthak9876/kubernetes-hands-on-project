@@ -5,10 +5,11 @@ kind: ConfigMap
 metadata:
   name: flask-config
   namespace: backend
-  labels:
-    app: flask-api
 data:
-  FLASK_ENV: production
-  API_FEATURE_FLAG: "true"
-  DB_HOST: mysql.database.svc.cluster.local
-  DB_PORT: "3306"
+  DATABASE_HOST: "mysql-service.backend.svc.cluster.local"
+  DATABASE_PORT: "3306"
+  DATABASE_NAME: "webapp_db"
+  DATABASE_USER: "root"
+  API_PORT: "8080"
+  LOG_LEVEL: "info"
+  ENVIRONMENT: "development"

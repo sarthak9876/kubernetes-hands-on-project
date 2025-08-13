@@ -2,7 +2,7 @@
 # Build an OCI-compliant image for Flask API (works with Docker and containerd)
 
 # Use official Python base image
-FROM python:3.11-slim
+FROM python:3.9-alpine
 
 # Set working directory
 WORKDIR /app

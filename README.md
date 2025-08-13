@@ -151,9 +151,15 @@ kubernetes-hands-on-project/
 │   │   ├── nginx-service.yaml
 │   │   └── nginx-configmap.yaml
 │   └── monitoring/
+│       ├── README.md
 │       ├── monitoring-namespace.yaml
 │       ├── resource-quota.yaml
-│       └── network-policies.yaml
+│       ├── network-policies.yaml
+│       ├── prometheus-configmap.yaml
+│       ├── prometheus-deployment.yaml
+│       ├── prometheus-service.yaml
+│       ├── grafana-deployment.yaml
+│       └── grafana-service.yaml
 ├── scripts/
 │   ├── cluster-setup/
 │   │   ├── 00-prerequisites.sh

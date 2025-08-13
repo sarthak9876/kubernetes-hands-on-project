@@ -1,0 +1,304 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Kubernetes Multi-Tier Web App</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                color: white;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background: rgba(255,255,255,0.1);
+                padding: 30px;
+                border-radius: 15px;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 32px rgba(31,38,135,0.37);
+            }
+            h1 {
+                text-align: center;
+                margin-bottom: 30px;
+                font-size: 2.5em;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }
+            .section {
+                background: rgba(255,255,255,0.1);
+                margin: 20px 0;
+                padding: 20px;
+                border-radius: 10px;
+                border: 1px solid rgba(255,255,255,0.2);
+            }
+            .section h2 {
+                margin-top: 0;
+                color: #fff;
+                border-bottom: 2px solid rgba(255,255,255,0.3);
+                padding-bottom: 10px;
+            }
+            button {
+                background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                margin: 10px 5px;
+                border-radius: 25px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            }
+            button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            }
+            .response {
+                background: rgba(0,0,0,0.3);
+                padding: 15px;
+                border-radius: 8px;
+                margin: 15px 0;
+                border-left: 4px solid #4ECDC4;
+                font-family: 'Courier New', monospace;
+                min-height: 50px;
+                white-space: pre-wrap;
+            }
+            .status {
+                display: inline-block;
+                padding: 5px 15px;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: bold;
+                margin: 10px 0;
+            }
+            .status.online {
+                background: #4CAF50;
+                color: white;
+            }
+            .status.offline {
+                background: #f44336;
+                color: white;
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                margin: 20px 0;
+            }
+            .loading {
+                color: #4ECDC4;
+                font-style: italic;
+            }
+            .error {
+                color: #FF6B6B;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 Kubernetes Multi-Tier Application</h1>
+            
+            <div class="section">
+                <h2>📊 System Status</h2>
+                <div id="status-info">
+                    <div class="status online">Frontend: Online</div>
+                    <div id="backend-status" class="status offline">Backend: Checking...</div>
+                    <div id="database-status" class="status offline">Database: Checking...</div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="section">
+                    <h2>🔗 Backend API Testing</h2>
+                    <button onclick="testBackendAPI()">Test Backend Connection</button>
+                    <button onclick="getBackendHealth()">Check Backend Health</button>
+                    <button onclick="getBackendConfig()">View Backend Config</button>
+                    <div id="api-response" class="response">Click buttons to test API connectivity...</div>
+                </div>
+
+                <div class="section">
+                    <h2>📈 Load Balancing Demo</h2>
+                    <button onclick="testLoadBalancing()">Test Load Balancing (10 requests)</button>
+                    <button onclick="continuousTest()">Continuous Testing</button>
+                    <button onclick="stopContinuous()">Stop Testing</button>
+                    <div id="load-response" class="response">Test load balancing across backend pods...</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🏗️ Architecture Information</h2>
+                <div class="grid">
+                    <div>
+                        <h3>🎨 Frontend Tier</h3>
+                        <p>• Nginx web server</p>
+                        <p>• Static HTML/CSS/JavaScript</p>
+                        <p>• NodePort service (external access)</p>
+                        <p>• Pod: <span id="frontend-pod">Loading...</span></p>
+                    </div>
+                    <div>
+                        <h3>⚙️ Backend Tier</h3>
+                        <p>• Python Flask API</p>
+                        <p>• Multiple replicas (load balanced)</p>
+                        <p>• ClusterIP service (internal)</p>
+                        <p>• Pods: <span id="backend-pods">Loading...</span></p>
+                    </div>
+                    <div>
+                        <h3>🗄️ Database Tier</h3>
+                        <p>• MySQL 8.0 database</p>
+                        <p>• StatefulSet with persistent storage</p>
+                        <p>• Headless service</p>
+                        <p>• Storage: Local hostPath (2Gi)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const API_BASE = '/api';
+            let continuousTestInterval;
+
+            // Check initial status
+            window.onload = function() {
+                checkBackendStatus();
+                updateFrontendPod();
+            };
+
+            function updateFrontendPod() {
+                // In a real scenario, this would come from an API
+                document.getElementById('frontend-pod').textContent = window.location.hostname;
+            }
+
+            async function checkBackendStatus() {
+                try {
+                    const response = await fetch(API_BASE + '/health');
+                    if (response.ok) {
+                        document.getElementById('backend-status').className = 'status online';
+                        document.getElementById('backend-status').textContent = 'Backend: Online';
+                        document.getElementById('database-status').className = 'status online';
+                        document.getElementById('database-status').textContent = 'Database: Online';
+                    } else {
+                        throw new Error('Backend not responding');
+                    }
+                } catch (error) {
+                    document.getElementById('backend-status').className = 'status offline';
+                    document.getElementById('backend-status').textContent = 'Backend: Offline';
+                    document.getElementById('database-status').className = 'status offline';
+                    document.getElementById('database-status').textContent = 'Database: Unknown';
+                }
+            }
+
+            async function testBackendAPI() {
+                const responseDiv = document.getElementById('api-response');
+                responseDiv.innerHTML = '<span class="loading">Testing backend connection...</span>';
+                
+                try {
+                    const response = await fetch(API_BASE + '/');
+                    const data = await response.text();
+                    responseDiv.innerHTML = '✅ Backend Response:\n' + data;
+                    checkBackendStatus();
+                } catch (error) {
+                    responseDiv.innerHTML = '<span class="error">❌ Error: ' + error.message + '</span>';
+                }
+            }
+
+            async function getBackendHealth() {
+                const responseDiv = document.getElementById('api-response');
+                responseDiv.innerHTML = '<span class="loading">Checking backend health...</span>';
+                
+                try {
+                    const response = await fetch(API_BASE + '/health');
+                    const data = await response.json();
+                    responseDiv.innerHTML = '🏥 Health Check:\n' + JSON.stringify(data, null, 2);
+                } catch (error) {
+                    responseDiv.innerHTML = '<span class="error">❌ Health check failed: ' + error.message + '</span>';
+                }
+            }
+
+            async function getBackendConfig() {
+                const responseDiv = document.getElementById('api-response');
+                responseDiv.innerHTML = '<span class="loading">Fetching backend configuration...</span>';
+                
+                try {
+                    const response = await fetch(API_BASE + '/config');
+                    const data = await response.json();
+                    responseDiv.innerHTML = '⚙️ Backend Configuration:\n' + JSON.stringify(data, null, 2);
+                } catch (error) {
+                    responseDiv.innerHTML = '<span class="error">❌ Config fetch failed: ' + error.message + '</span>';
+                }
+            }
+
+            async function testLoadBalancing() {
+                const responseDiv = document.getElementById('load-response');
+                responseDiv.innerHTML = '<span class="loading">Testing load balancing (10 requests)...</span>';
+                
+                const pods = new Set();
+                let results = 'Load Balancing Test Results:\n\n';
+                
+                try {
+                    for (let i = 1; i <= 10; i++) {
+                        const response = await fetch(API_BASE + '/');
+                        const data = await response.text();
+                        const podMatch = data.match(/Pod: ([^\n]+)/);
+                        const podName = podMatch ? podMatch[1] : 'unknown';
+                        pods.add(podName);
+                        results += `Request ${i}: ${podName}\n`;
+                    }
+                    
+                    results += `\n📊 Summary:\n`;
+                    results += `Total requests: 10\n`;
+                    results += `Unique pods hit: ${pods.size}\n`;
+                    results += `Pods: ${Array.from(pods).join(', ')}\n`;
+                    
+                    responseDiv.innerHTML = results;
+                } catch (error) {
+                    responseDiv.innerHTML = '<span class="error">❌ Load balancing test failed: ' + error.message + '</span>';
+                }
+            }
+
+            function continuousTest() {
+                if (continuousTestInterval) return;
+                
+                const responseDiv = document.getElementById('load-response');
+                let requestCount = 0;
+                const pods = new Set();
+                
+                responseDiv.innerHTML = '<span class="loading">🔄 Continuous testing started...</span>\n';
+                
+                continuousTestInterval = setInterval(async () => {
+                    try {
+                        const response = await fetch(API_BASE + '/');
+                        const data = await response.text();
+                        const podMatch = data.match(/Pod: ([^\n]+)/);
+                        const podName = podMatch ? podMatch[1] : 'unknown';
+                        pods.add(podName);
+                        requestCount++;
+                        
+                        responseDiv.innerHTML = `🔄 Continuous Testing (${requestCount} requests)\n\n` +
+                                              `Latest response: ${podName}\n` +
+                                              `Unique pods hit: ${pods.size}\n` +
+                                              `Pods: ${Array.from(pods).join(', ')}\n\n` +
+                                              `Click "Stop Testing" to end.`;
+                    } catch (error) {
+                        responseDiv.innerHTML += `\n<span class="error">❌ Request failed: ${error.message}</span>`;
+                    }
+                }, 2000);
+            }
+
+            function stopContinuous() {
+                if (continuousTestInterval) {
+                    clearInterval(continuousTestInterval);
+                    continuousTestInterval = null;
+                    document.getElementById('load-response').innerHTML += '\n\n⏹️ Continuous testing stopped.';
+                }
+            }
+        </script>
+    </body>
+    </html>
+
+

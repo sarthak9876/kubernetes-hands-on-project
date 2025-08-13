@@ -1,0 +1,8 @@
+# monitoring-namespace.yaml
+# Creates a dedicated namespace for monitoring components
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    name: monitoring
