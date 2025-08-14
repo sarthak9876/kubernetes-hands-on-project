@@ -261,7 +261,13 @@ chmod +x scripts/00-prerequisites/*.sh
 # ./scripts/01-cluster-setup/install-docker.sh
 
 # Install Kubernetes components (run on all 3 instances)
-./scripts/01-cluster-setup/install-kubernetes.sh
+# This project pins kubeadm, kubelet, and kubectl to version 1.28.0-00 for stability.
+# After installation, the version is held to prevent automatic upgrades:
+./scripts/02-install-kubernetes.sh
+# To upgrade, unhold the packages, install the new version, then hold again:
+# sudo apt-mark unhold kubelet kubeadm kubectl
+# sudo apt-get install -y kubelet=<new-version> kubeadm=<new-version> kubectl=<new-version>
+# sudo apt-mark hold kubelet kubeadm kubectl
 ```
 
 #### Step 4: Initialize Control Plane
@@ -450,6 +456,68 @@ kubectl top pods --containers
 ./scripts/03-utilities/cluster-status.sh
 ```
 
+
+## 🚀 Cluster Upgrade: Zero-Downtime Strategies & Best Practices
+
+Upgrading your Kubernetes cluster is essential for security, new features, and bug fixes. This section teaches you how to plan and execute a production-grade cluster upgrade with minimal downtime.
+
+### Why Upgrade?
+- Security patches and vulnerability fixes
+- Access to new Kubernetes features
+- Improved stability and performance
+
+### Upgrade Planning
+- Review [docs/03-cluster-upgrade/upgrade-planning.md](docs/03-cluster-upgrade/upgrade-planning.md) for a checklist
+- Backup etcd and cluster state before starting
+- Validate application health and resource usage
+- Read release notes for breaking changes
+- Unhold kubeadm, kubelet, and kubectl before upgrade, then hold again after upgrade to prevent automatic updates.
+
+### Step-by-Step Upgrade Procedure
+1. **Backup etcd and cluster resources**
+   ```sh
+   ./scripts/utilities/backup-etcd.sh
+   kubectl get all --all-namespaces -o yaml > cluster-backup.yaml
+   ```
+2. **Drain and cordon worker nodes**
+   ```sh
+   kubectl drain <node-name> --ignore-daemonsets --delete-local-data
+   kubectl cordon <node-name>
+   ```
+3. **Upgrade kubeadm on control plane**
+   ```sh
+   sudo apt-mark unhold kubelet kubeadm kubectl
+   sudo apt-get update && sudo apt-get install -y kubeadm=<new-version>
+   sudo kubeadm upgrade plan
+   sudo kubeadm upgrade apply v1.xx.x
+   ```
+4. **Upgrade kubelet and kubectl on all nodes**
+   ```sh
+   sudo apt-get install -y kubelet=<new-version> kubectl=<new-version>
+   sudo apt-mark hold kubelet kubeadm kubectl
+   sudo systemctl restart kubelet
+   ```
+5. **Uncordon and validate nodes**
+   ```sh
+   kubectl uncordon <node-name>
+   kubectl get nodes
+   kubectl get pods --all-namespaces
+   ```
+6. **Monitor application health and logs**
+   - Use Prometheus and Grafana dashboards
+   - Check for pod restarts, errors, and resource usage
+
+### Rollback Strategy
+- If issues occur, restore etcd and cluster resources from backup
+- Review [docs/03-cluster-upgrade/rollback-strategy.md](docs/03-cluster-upgrade/rollback-strategy.md)
+
+### Best Practices
+- Always test upgrades in a staging environment first
+- Automate backups and health checks
+- Communicate upgrade windows to stakeholders
+- Monitor cluster and application health throughout the process
+
+For detailed guides, see the [Cluster Upgrade Documentation](docs/03-cluster-upgrade/README.md).
 
 ## 🎓 Next Steps & Extensions
 
