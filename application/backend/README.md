@@ -1,3 +1,159 @@
+# Backend (Flask API) Deployment
+
+This directory contains the Flask API backend and its Kubernetes deployment manifests.
+
+## 📋 Prerequisites
+
+Before deploying the backend, you need to build and push the container image to a Docker registry.
+
+## 🐳 Building and Pushing Images
+
+### For Docker Users
+
+```bash
+# Navigate to the Flask app directory
+cd application/backend/flask-app/
+
+# Build the image
+docker build -t your-registry/flask-backend:v1.0 .
+
+# Push to registry (replace with your registry)
+docker push your-registry/flask-backend:v1.0
+
+# Update the deployment manifest
+# Edit flask-deployment.yaml and change:
+# image: your-registry/flask-backend:v1.0
+```
+
+### For containerd Users
+
+```bash
+# Navigate to the Flask app directory
+cd application/backend/flask-app/
+
+# Build with buildctl (if using BuildKit)
+sudo buildctl build --frontend dockerfile.v0 \
+  --local dockerfile=. \
+  --local context=. \
+  --output type=image,name=your-registry/flask-backend:v1.0,push=true
+
+# Alternative: Use Docker build then import to containerd
+docker build -t flask-backend:v1.0 .
+docker save flask-backend:v1.0 | sudo ctr -n k8s.io images import -
+
+# Tag for registry
+sudo ctr -n k8s.io images tag flask-backend:v1.0 your-registry/flask-backend:v1.0
+
+# Push to registry
+sudo ctr -n k8s.io images push your-registry/flask-backend:v1.0
+```
+
+## 🏷️ Container Registry Options
+
+### Option 1: Docker Hub (Public)
+```bash
+# Login to Docker Hub
+docker login
+
+# Tag and push
+docker tag flask-backend:v1.0 yourusername/flask-backend:v1.0
+docker push yourusername/flask-backend:v1.0
+
+# Update deployment manifest:
+# image: yourusername/flask-backend:v1.0
+```
+
+### Option 2: Local Registry (Development)
+```bash
+# Start local registry
+docker run -d -p 5000:5000 --name registry registry:2
+
+# Tag and push
+docker tag flask-backend:v1.0 localhost:5000/flask-backend:v1.0
+docker push localhost:5000/flask-backend:v1.0
+
+# Update deployment manifest:
+# image: localhost:5000/flask-backend:v1.0
+```
+
+### Option 3: AWS ECR
+```bash
+# Login to ECR
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
+
+# Tag and push
+docker tag flask-backend:v1.0 123456789012.dkr.ecr.us-east-1.amazonaws.com/flask-backend:v1.0
+docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/flask-backend:v1.0
+
+# Update deployment manifest:
+# image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/flask-backend:v1.0
+```
+
+## ⚙️ Updating Deployment Manifests
+
+After building and pushing your image, update the following files:
+
+1. **flask-deployment.yaml** - Update the `image:` field
+2. **flask-configmap.yaml** - Verify database connection settings
+3. **flask-secret.yaml** - Ensure database credentials are correct
+
+## 🚀 Deployment
+
+Once images are ready and manifests are updated:
+
+```bash
+# Deploy the backend
+./scripts/application-deploy/deploy-backend.sh
+
+# Verify deployment
+kubectl get pods -l app=flask
+kubectl logs deployment/flask-backend
+```
+
+## 🔧 Configuration
+
+The Flask backend connects to MySQL database using:
+- **Host**: `mysql-service.default.svc.cluster.local`
+- **Port**: `3306`
+- **Database**: `kubernetes_db`
+- **Credentials**: Stored in Kubernetes secrets
+
+## 🐛 Troubleshooting
+
+### Image Pull Errors
+```bash
+# Check if image exists in registry
+docker pull your-registry/flask-backend:v1.0
+
+# Check Kubernetes events
+kubectl describe pod <flask-pod-name>
+
+# Verify imagePullSecrets if using private registry
+kubectl get secrets
+```
+
+### Database Connection Issues
+```bash
+# Check MySQL service
+kubectl get svc mysql-service
+
+# Test database connectivity from backend pod
+kubectl exec -it <flask-pod> -- nslookup mysql-service
+
+# Check configuration
+kubectl get configmap flask-config -o yaml
+kubectl get secret flask-secret -o yaml
+```
+
+## 📁 Files in this Directory
+
+- `flask-app/` - Flask application source code
+- `flask-deployment.yaml` - Kubernetes Deployment
+- `flask-service.yaml` - Kubernetes Service
+- `flask-configmap.yaml` - Configuration settings
+- `flask-secret.yaml` - Database credentials
+- `README.md` - This file
+
 # Backend Tier: Flask API
 
 This section contains manifests and configuration for deploying the Flask backend API in the `backend` namespace.

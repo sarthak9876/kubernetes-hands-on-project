@@ -298,6 +298,19 @@ kubectl cluster-info
 
 ### 🏗️ Phase 3: Application Deployment
 
+**⚠️ Important Prerequisites:**
+Before deploying applications, you need to build and push container images to a Docker registry. The deployment manifests reference these images.
+
+**📋 Image Building Requirements:**
+- **Backend (Flask)**: Build from `application/backend/flask-app/`
+- **Frontend (Nginx)**: Build from `application/frontend/nginx-app/`
+- **Database (MySQL)**: Uses official MySQL image (no build required)
+
+**🔗 For detailed instructions on building and pushing images:**
+- **Docker users**: See [Backend Image Guide](application/backend/README.md) and [Frontend Image Guide](application/frontend/README.md)
+- **containerd users**: See [containerd Image Building](docs/02-application-deployment/README.md#image-building-with-containerd)
+- **Registry setup**: See [Container Registry Setup](docs/02-application-deployment/README.md#container-registry-setup)
+
 #### Step 9: Deploy Database Tier
 ```bash
 # Create namespace and deploy MySQL
