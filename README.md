@@ -226,8 +226,8 @@ chmod +x scripts/cluster-setup/*.sh
 ```
 
 #### Step 2: System Preparation
-```
-# Run prerequisites check (run on all 3 instances)
+```bash
+# Run prerequisites on all 3 instances
 ./scripts/cluster-setup/00-prerequisites.sh
 ```
 
@@ -235,50 +235,73 @@ chmod +x scripts/cluster-setup/*.sh
 
 #### Step 3: Install Docker & Kubernetes
 ```bash
-# Run installation scripts (check actual script names in scripts/cluster-setup/)
-# Follow the documentation in docs/01-cluster-setup/ for detailed steps
+# Install Docker on all 3 instances
+./scripts/cluster-setup/01-install-docker.sh
+
+# Install Kubernetes components on all 3 instances
+./scripts/cluster-setup/02-install-kubernetes.sh
 ```
 
 #### Step 4: Initialize Control Plane
 ```bash
 # Run ONLY on control plane node
-# Follow the documentation in docs/01-cluster-setup/ for detailed steps
+./scripts/cluster-setup/03-init-cluster.sh
 
-# Save the join command that appears - you'll need it for workers!
+# IMPORTANT: Save the join command output - you'll need it for workers!
+# Example: kubeadm join 10.0.1.4:6443 --token abc123...
 ```
 
-#### Step 5: Setup Worker Nodes
+#### Step 5: Setup Networking (Control Plane)
 ```bash
-# Run on each worker node
-# Follow the documentation in docs/01-cluster-setup/ for detailed steps
+# Run ONLY on control plane node (after step 4)
+./scripts/cluster-setup/04-setup-networking.sh
 
-# Note: Use the join command from step 4
+# This will:
+# - Set up kubeconfig for your user
+# - Install Flannel CNI
+# - Make nodes ready
 ```
 
-#### Step 6: Configure Networking
+#### Step 6: Join Worker Nodes
+```bash
+# Run on EACH worker node (use the join command from step 4)
+# Example:
+sudo kubeadm join 10.0.1.4:6443 --token abc123.def456ghi789 \
+    --discovery-token-ca-cert-hash sha256:xyz789...
+
+# After joining, verify on control plane:
+kubectl get nodes
+```
+
+#### Step 7: Setup Metrics Server
 ```bash
 # Run ONLY on control plane node
-# Follow the documentation in docs/01-cluster-setup/ for detailed steps
+./scripts/cluster-setup/05-setup-metrics.sh
+```
 
-# Validate cluster
+#### Step 8: Validate Cluster
+```bash
+# Check cluster status
 kubectl get nodes
+kubectl get pods -A
+kubectl cluster-info
 ```
 
 ### 🏗️ Phase 3: Application Deployment
 
-#### Step 7: Deploy Database Tier
+#### Step 9: Deploy Database Tier
 ```bash
 # Create namespace and deploy MySQL
 ./scripts/application-deploy/deploy-database.sh
 ```
 
-#### Step 8: Deploy Backend Tier
+#### Step 10: Deploy Backend Tier
 ```bash
 # Deploy Flask API
 ./scripts/application-deploy/deploy-backend.sh
 ```
 
-#### Step 9: Deploy Frontend Tier
+#### Step 11: Deploy Frontend Tier
 ```bash
 # Deploy Nginx frontend
 ./scripts/application-deploy/deploy-frontend.sh
@@ -287,13 +310,37 @@ kubectl get nodes
 ./scripts/application-deploy/validate-deployment.sh
 ```
 
-#### Step 10: Access Your Application
+#### Step 12: Access Your Application
 ```bash
 # Get the NodePort URL
 kubectl get svc nginx-service -o wide
 
 # Access via: http://<public_IP>:<nodeport_port>
 ```
+
+## 🚨 Troubleshooting
+
+### Control Plane "NotReady" State
+If your control plane node shows "NotReady":
+
+```bash
+# Check kubelet status
+sudo systemctl status kubelet
+
+# Check for CNI installation
+kubectl get pods -n kube-system
+
+# If no CNI pods, install Flannel:
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+
+# Wait for all system pods to be running
+kubectl get pods -n kube-system --watch
+```
+
+### Common Issues
+- **Connection refused**: Ensure kubeconfig is set up correctly
+- **Nodes NotReady**: CNI (Flannel) must be installed
+- **Pods pending**: Check node resources and taints
 
 ## 🎯 Key Learning Outcomes
 
