@@ -5,14 +5,14 @@
 
 set -e
 
-# Add Kubernetes apt repository
-sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+# Add new Kubernetes apt repository (official)
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | \
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | \
   sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 # Install Kubernetes components (version 1.28.x)
-K8S_VERSION=1.28.0-00
+K8S_VERSION=1.28.0-1.1
 sudo apt-get update
 sudo apt-get install -y kubelet=$K8S_VERSION kubeadm=$K8S_VERSION kubectl=$K8S_VERSION
 

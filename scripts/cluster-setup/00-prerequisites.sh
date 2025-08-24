@@ -29,3 +29,5 @@ sudo sysctl --system
 
 # Print completion message
 echo "[INFO] Prerequisites installed and system prepared for Kubernetes."
+
+

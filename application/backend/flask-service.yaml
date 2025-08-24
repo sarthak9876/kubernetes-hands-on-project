@@ -8,10 +8,10 @@ metadata:
   labels:
     app: flask-api
 spec:
-  type: ClusterIP
   selector:
     app: flask-api
   ports:
     - protocol: TCP
       port: 5000
       targetPort: 5000
+  type: ClusterIP

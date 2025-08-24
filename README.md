@@ -106,7 +106,6 @@ kubernetes-hands-on-project/
 │   │   ├── cluster-issues.md
 │   │   └── application-issues.md
 │   └── best-practices/
-│       ├── README.md
 │       ├── security.md
 │       ├── monitoring.md
 │       ├── backup-recovery.md
@@ -151,15 +150,9 @@ kubernetes-hands-on-project/
 │   │   ├── nginx-service.yaml
 │   │   └── nginx-configmap.yaml
 │   └── monitoring/
-│       ├── README.md
 │       ├── monitoring-namespace.yaml
 │       ├── resource-quota.yaml
-│       ├── network-policies.yaml
-│       ├── prometheus-configmap.yaml
-│       ├── prometheus-deployment.yaml
-│       ├── prometheus-service.yaml
-│       ├── grafana-deployment.yaml
-│       └── grafana-service.yaml
+│       └── network-policies.yaml
 ├── scripts/
 │   ├── cluster-setup/
 │   │   ├── 00-prerequisites.sh
@@ -210,130 +203,96 @@ kubernetes-hands-on-project/
 
 ### Prerequisites Checklist
 
-Before you begin, make sure you have the following. Each item is critical for a successful, secure, and repeatable Kubernetes deployment:
+Before starting, ensure you have:
 
-- **AWS Account** with EC2 access (for provisioning cloud infrastructure)
+- **AWS Account** with EC2 access
 - **3 Ubuntu 20.04 EC2 instances**:
-  - 1× Control Plane: `t3.small` (2 vCPU, 2GB RAM) — runs the Kubernetes master components
-  - 2× Worker Nodes: `t3.micro` (1 vCPU, 1GB RAM) — run your application workloads
-- **SSH access** to all instances (for remote management and automation)
-- **Security groups** configured for Kubernetes ports (to allow required traffic between nodes)
-- **Basic Linux knowledge** (for troubleshooting and command-line operations)
+  - 1× Control Plane: `t3.small` (2 vCPU, 2GB RAM)
+  - 2× Worker Nodes: `t3.micro` (1 vCPU, 1GB RAM)
+- **SSH access** to all instances
+- **Security groups** configured for K8s ports
+- **Basic Linux knowledge**
 
 ### 🔧 Phase 1: Infrastructure Setup
 
 #### Step 1: Prepare AWS Environment
-```sh
-# Clone this repository to get all manifests, scripts, and documentation
+```
+# Clone this repository
 git clone https://github.com/sarthak9876/kubernetes-hands-on-project.git
 cd kubernetes-hands-on-project
 
-# (Optional) Make all prerequisite scripts executable
-chmod +x scripts/00-prerequisites/*.sh
-
-# Run the AWS instance setup script on all 3 EC2 instances
-# This script will install base packages, set up users, and configure the system for Kubernetes
-./scripts/00-prerequisites/aws-instance-setup.sh
+# Make scripts executable
+chmod +x scripts/cluster-setup/*.sh
 ```
 
 #### Step 2: System Preparation
-```sh
-# Prepare each Ubuntu system for Kubernetes (run on all 3 instances)
-# This script will update the OS, configure networking, and install essential tools
-./scripts/00-prerequisites/ubuntu-system-prep.sh
-
-# Validate that all prerequisites are met (run on all 3 instances)
-# This checks for required kernel modules, swap status, and system settings
-./scripts/00-prerequisites/validate-prerequisites.sh
+```
+# Run prerequisites check (run on all 3 instances)
+./scripts/cluster-setup/00-prerequisites.sh
 ```
 
 ### ⚙️ Phase 2: Kubernetes Cluster Setup
 
-#### Step 3: Install Container Runtime & Kubernetes
-
-> **Note:** This project supports both containerd (recommended) and Docker as container runtimes. Choose the runtime that best fits your needs. See the documentation for details.
-
-```sh
-# Install your chosen container runtime (run on all 3 instances)
-# For containerd (recommended):
-./scripts/01-cluster-setup/install-containerd.sh
-# For Docker (legacy/optional):
-# ./scripts/01-cluster-setup/install-docker.sh
-
-# Install Kubernetes components (run on all 3 instances)
-# This project pins kubeadm, kubelet, and kubectl to version 1.28.0-00 for stability.
-# After installation, the version is held to prevent automatic upgrades:
-./scripts/02-install-kubernetes.sh
-# To upgrade, unhold the packages, install the new version, then hold again:
-# sudo apt-mark unhold kubelet kubeadm kubectl
-# sudo apt-get install -y kubelet=<new-version> kubeadm=<new-version> kubectl=<new-version>
-# sudo apt-mark hold kubelet kubeadm kubectl
+#### Step 3: Install Docker & Kubernetes
+```bash
+# Run installation scripts (check actual script names in scripts/cluster-setup/)
+# Follow the documentation in docs/01-cluster-setup/ for detailed steps
 ```
 
 #### Step 4: Initialize Control Plane
-```sh
-# Run ONLY on the control plane node
-# This script initializes the Kubernetes control plane and outputs a join command for worker nodes
-./scripts/01-cluster-setup/init-control-plane.sh
+```bash
+# Run ONLY on control plane node
+# Follow the documentation in docs/01-cluster-setup/ for detailed steps
 
-# Save the join command that appears — you'll need it for workers!
+# Save the join command that appears - you'll need it for workers!
 ```
 
 #### Step 5: Setup Worker Nodes
-```sh
+```bash
 # Run on each worker node
-# This script joins the node to the cluster using the join command from the control plane
-./scripts/01-cluster-setup/join-worker-nodes.sh
+# Follow the documentation in docs/01-cluster-setup/ for detailed steps
 
-# Note: Edit the script with the actual join command from step 4
+# Note: Use the join command from step 4
 ```
 
 #### Step 6: Configure Networking
-```sh
-# Run ONLY on the control plane node
-# This script deploys the Flannel CNI for pod networking
-./scripts/01-cluster-setup/setup-flannel-cni.sh
+```bash
+# Run ONLY on control plane node
+# Follow the documentation in docs/01-cluster-setup/ for detailed steps
 
-# Deploy the metrics server for resource monitoring
-./scripts/01-cluster-setup/setup-metrics-server.sh
-
-# Validate the cluster status and health
-./scripts/01-cluster-setup/validate-cluster.sh
+# Validate cluster
+kubectl get nodes
 ```
 
 ### 🏗️ Phase 3: Application Deployment
 
 #### Step 7: Deploy Database Tier
-```sh
-# Create Kubernetes secrets and configmaps for the database
-./scripts/02-application-deploy/create-secrets-configs.sh
-
-# Deploy the MySQL database StatefulSet and service
-./scripts/02-application-deploy/deploy-database.sh
+```bash
+# Create namespace and deploy MySQL
+./scripts/application-deploy/deploy-database.sh
 ```
 
 #### Step 8: Deploy Backend Tier
-```sh
-# Deploy the Flask API backend (Deployment, Service, ConfigMap, Secret)
-./scripts/02-application-deploy/deploy-backend.sh
+```bash
+# Deploy Flask API
+./scripts/application-deploy/deploy-backend.sh
 ```
 
 #### Step 9: Deploy Frontend Tier
-```sh
-# Deploy the Nginx frontend (Deployment, Service, ConfigMap)
-./scripts/02-application-deploy/deploy-frontend.sh
+```bash
+# Deploy Nginx frontend
+./scripts/application-deploy/deploy-frontend.sh
 
-# Validate the complete application stack (frontend, backend, database)
-./scripts/02-application-deploy/validate-application.sh
+# Validate complete application
+./scripts/application-deploy/validate-deployment.sh
 ```
 
 #### Step 10: Access Your Application
-```sh
-# Get the NodePort URL for the Nginx service
+```bash
+# Get the NodePort URL
 kubectl get svc nginx-service -o wide
 
-# Access your application in a browser using:
-# http://<public_IP>:<nodeport_port>
+# Access via: http://<public_IP>:<nodeport_port>
 ```
 
 ## 🎯 Key Learning Outcomes
@@ -384,140 +343,53 @@ kubectl get svc nginx-service -o wide
 ## 📊 Project Highlights
 
 ### Performance Metrics
-kubectl logs <pod_name> -n <namespace> --previous
-kubectl get svc
-kubectl exec <pod_name> -n <namespace> -it  -- nslookup 
-kubectl describe node 
-kubectl get events --sort-by=.metadata.creationTimestamp
-
 - **Cluster Setup Time**: ~30 minutes (with automation)
 - **Application Deployment**: ~10 minutes
-- **Pod Startup Time**: Use the following command to check pod logs and startup times:
-  ```sh
-  kubectl logs <pod_name> -n <namespace> --previous
-  ```
-
-#### Service Debugging
-```sh
-# List all services and their endpoints
+- **Pod Startup Time**: 
+```
+kubectl logs <pod_name> -n <namespace> --previous
+```
+# Service debugging
+```
 kubectl get svc
 kubectl get endpoints
 ```
 
-#### Network Debugging
-```sh
-# Run DNS/network checks from within a pod
-kubectl exec <pod_name> -n <namespace> -it -- nslookup <service>
+# Network debugging
+```
+kubectl exec <pod_name> -n <namespace> -it  -- nslookup 
 ```
 
-#### Resource Debugging
-```sh
-# Describe node details and view recent events
-kubectl describe node
+# Resource debugging
+```
+kubectl describe node 
 kubectl get events --sort-by=.metadata.creationTimestamp
 ```
 
 # Emergency Procedures
 
+## Restart deployment
+```
 kubectl rollout restart deployment <deployment_name> -n <namespace>
+```
+## Scale deployment
+```
 kubectl scale deployment <deployment_name> -n <namespace> --replicas=<replica_count> //can be used to scale up or scale down your application
+```
+## Force delete stuck pod
+```
 kubectl delete pod <pod_name> --force --grace-period=0
+```
+## Resource usage
+```
 kubectl top nodes                //Shows node resource usage
-
-## Restart a Deployment
-```sh
-# Safely restart a deployment (e.g., after config changes)
-kubectl rollout restart deployment <deployment_name> -n <namespace>
+kubectl top pods                 //Shows pod resource usage
+kubectl top pods --containers    //Shows container-level usage
 ```
 
-## Scale a Deployment
-```sh
-# Scale up or down your application by changing the replica count
-kubectl scale deployment <deployment_name> -n <namespace> --replicas=<replica_count>
-```
-
-## Force Delete a Stuck Pod
-```sh
-# Forcefully remove a pod that is stuck or unresponsive
-kubectl delete pod <pod_name> --force --grace-period=0
-```
-
-## Check Resource Usage
-```sh
-# View node and pod resource usage (requires metrics server)
-kubectl top nodes
-kubectl top pods
-kubectl top pods --containers
-```
-
-## Check Cluster Status
-```sh
-# Run the cluster status utility script
+# Check cluster status
 ./scripts/03-utilities/cluster-status.sh
-```
 
-
-## 🚀 Cluster Upgrade: Zero-Downtime Strategies & Best Practices
-
-Upgrading your Kubernetes cluster is essential for security, new features, and bug fixes. This section teaches you how to plan and execute a production-grade cluster upgrade with minimal downtime.
-
-### Why Upgrade?
-- Security patches and vulnerability fixes
-- Access to new Kubernetes features
-- Improved stability and performance
-
-### Upgrade Planning
-- Review [docs/03-cluster-upgrade/upgrade-planning.md](docs/03-cluster-upgrade/upgrade-planning.md) for a checklist
-- Backup etcd and cluster state before starting
-- Validate application health and resource usage
-- Read release notes for breaking changes
-- Unhold kubeadm, kubelet, and kubectl before upgrade, then hold again after upgrade to prevent automatic updates.
-
-### Step-by-Step Upgrade Procedure
-1. **Backup etcd and cluster resources**
-   ```sh
-   ./scripts/utilities/backup-etcd.sh
-   kubectl get all --all-namespaces -o yaml > cluster-backup.yaml
-   ```
-2. **Drain and cordon worker nodes**
-   ```sh
-   kubectl drain <node-name> --ignore-daemonsets --delete-local-data
-   kubectl cordon <node-name>
-   ```
-3. **Upgrade kubeadm on control plane**
-   ```sh
-   sudo apt-mark unhold kubelet kubeadm kubectl
-   sudo apt-get update && sudo apt-get install -y kubeadm=<new-version>
-   sudo kubeadm upgrade plan
-   sudo kubeadm upgrade apply v1.xx.x
-   ```
-4. **Upgrade kubelet and kubectl on all nodes**
-   ```sh
-   sudo apt-get install -y kubelet=<new-version> kubectl=<new-version>
-   sudo apt-mark hold kubelet kubeadm kubectl
-   sudo systemctl restart kubelet
-   ```
-5. **Uncordon and validate nodes**
-   ```sh
-   kubectl uncordon <node-name>
-   kubectl get nodes
-   kubectl get pods --all-namespaces
-   ```
-6. **Monitor application health and logs**
-   - Use Prometheus and Grafana dashboards
-   - Check for pod restarts, errors, and resource usage
-
-### Rollback Strategy
-- If issues occur, restore etcd and cluster resources from backup
-- Review [docs/03-cluster-upgrade/rollback-strategy.md](docs/03-cluster-upgrade/rollback-strategy.md)
-
-### Best Practices
-- Always test upgrades in a staging environment first
-- Automate backups and health checks
-- Communicate upgrade windows to stakeholders
-- Monitor cluster and application health throughout the process
-
-For detailed guides, see the [Cluster Upgrade Documentation](docs/03-cluster-upgrade/README.md).
 
 ## 🎓 Next Steps & Extensions
 
@@ -592,7 +464,7 @@ If this project helped you learn Kubernetes, please consider giving it a star! �
 
 **Ready to start your Kubernetes journey?** 
 
-👉 Begin with [Cluster Setup Guide](docs/01-cluster-setup/README.md)
+👉 Begin with [Prerequisites Setup](docs/01-prerequisites/README.md)
 
 💡 **Tip**: Follow the documentation step-by-step for the best learning experience!
 
