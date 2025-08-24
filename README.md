@@ -327,6 +327,56 @@ kubectl get svc nginx-service -o wide
 # Access via: http://<public_IP>:<nodeport_port>
 ```
 
+### 📊 Phase 4: Monitoring Setup (Required for Cluster Upgrade)
+
+#### Step 13: Deploy Monitoring Stack
+```bash
+# Deploy Prometheus and Grafana for monitoring
+./scripts/monitoring/deploy-monitoring.sh
+
+# Verify monitoring deployment
+kubectl get pods -n monitoring
+```
+
+#### Step 14: Configure Alerts and Dashboards
+```bash
+# Set up monitoring dashboards
+./scripts/monitoring/setup-dashboards.sh
+
+# Access Grafana: http://<public_IP>:<grafana-nodeport>
+```
+
+### 🔄 Phase 5: Zero-Downtime Cluster Upgrade
+
+#### Step 15: Pre-Upgrade Validation
+```bash
+# Validate cluster health before upgrade
+./scripts/cluster-upgrade/pre-upgrade-check.sh
+
+# Set up node aliases for easier management
+./scripts/utilities/node-helper.sh
+source ~/.k8s-node-aliases
+```
+
+#### Step 16: Upgrade Control Plane
+```bash
+# Upgrade control plane from v1.28.0 to v1.29.x
+./scripts/cluster-upgrade/upgrade-control-plane.sh v1.29.0
+```
+
+#### Step 17: Upgrade Worker Nodes
+```bash
+# Upgrade worker nodes one by one (zero downtime)
+./scripts/cluster-upgrade/upgrade-worker-node.sh 1
+./scripts/cluster-upgrade/upgrade-worker-node.sh 2
+```
+
+#### Step 18: Post-Upgrade Validation
+```bash
+# Validate upgrade and application health
+./scripts/cluster-upgrade/post-upgrade-check.sh
+```
+
 ## 🚨 Troubleshooting
 
 ### Control Plane "NotReady" State
@@ -380,6 +430,13 @@ kubectl get pods -n kube-system --watch
 - [x] **Monitoring**: Metrics server, resource monitoring
 - [x] **Troubleshooting**: Log analysis, debugging techniques
 - [x] **Documentation**: Comprehensive project documentation
+
+### ✅ Production Operations
+- [x] **Zero-Downtime Cluster Upgrade**: Upgrading from v1.28.0 to v1.29.x
+- [x] **Monitoring & Alerting**: Prometheus and Grafana deployment
+- [x] **Node Management**: Draining, cordoning, and upgrade procedures
+- [x] **Health Validation**: Pre and post-upgrade checks
+- [x] **Rollback Strategies**: Safe rollback procedures for failed upgrades
 
 ## 🛠️ Technology Stack
 
@@ -450,13 +507,12 @@ kubectl top pods --containers    //Shows container-level usage
 ## 🎓 Next Steps & Extensions
 
 ### Planned Enhancements
-- [ ] **Cluster Upgrade**: Upgrading K8s cluster from v1.28.0 to a newer version while 3-tier application is running, demonstrating zero-downtime upgrade strategies used in production environments.
 - [ ] **Helm Charts**: Package applications for easier deployment
 - [ ] **CI/CD Pipeline**: Automated testing and deployment
 - [ ] **Service Mesh**: Istio integration for advanced networking
-- [ ] **Monitoring Stack**: Prometheus + Grafana setup
 - [ ] **GitOps**: ArgoCD for declarative deployments
 - [ ] **Multi-cluster**: Federation and cluster management
+- [ ] **Advanced Security**: RBAC, Pod Security Standards, Network Policies
 
 ### Learning Path
 1. **Complete this project** following all documentation
