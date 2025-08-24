@@ -233,14 +233,19 @@ chmod +x scripts/cluster-setup/*.sh
 
 ### ⚙️ Phase 2: Kubernetes Cluster Setup
 
-#### Step 3: Install Docker & Kubernetes
+#### Step 3: Install Container Runtime & Kubernetes
 ```bash
-# Install Docker on all 3 instances
+# Option A: Install Docker (recommended for learning)
 ./scripts/cluster-setup/01-install-docker.sh
+
+# Option B: Install containerd (production recommended)
+./scripts/cluster-setup/01-install-containerd.sh
 
 # Install Kubernetes components on all 3 instances
 ./scripts/cluster-setup/02-install-kubernetes.sh
 ```
+
+**Note:** Choose either Docker OR containerd, not both. Docker is easier for learning, containerd is more production-ready.
 
 #### Step 4: Initialize Control Plane
 ```bash
