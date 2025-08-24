@@ -2,6 +2,20 @@
 
 This guide explains how to safely upgrade your Kubernetes cluster using kubeadm, with zero-downtime strategies and best practices. **Complete [Upgrade Planning](upgrade-planning.md) first!**
 
+## Prerequisites
+
+### Set Meaningful Node Names (Optional but Recommended)
+
+If your nodes have IP-based names (like `ip-10-0-11-69`), rename them for easier management:
+
+```bash
+# Run this script on control plane to rename all nodes
+chmod +x scripts/utilities/rename-existing-nodes.sh
+./scripts/utilities/rename-existing-nodes.sh
+```
+
+After renaming, you can use friendly names like `k8s-control-plane`, `k8s-worker-1`, etc.
+
 ---
 
 ## 1. Upgrade Control Plane Components
