@@ -245,7 +245,11 @@ chmod +x scripts/cluster-setup/*.sh
 ./scripts/cluster-setup/02-install-kubernetes.sh
 ```
 
-**Note:** Choose either Docker OR containerd, not both. Docker is easier for learning, containerd is more production-ready.
+**⚠️ Important:** 
+- Choose either Docker OR containerd, not both
+- All scripts automatically detect your container runtime choice
+- Docker is easier for learning (has Docker CLI for debugging)
+- containerd is more production-ready (lighter weight, CRI-compliant)
 
 #### Step 4: Initialize Control Plane
 ```bash
